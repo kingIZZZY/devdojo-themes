@@ -29,22 +29,17 @@ class ThemesServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        Log::debug('111111111111111', [config('voyager.prefix'), request()->is(config('voyager.prefix')), request()->is(config('voyager.prefix').'/*')]);
         if (request()->is(config('voyager.prefix')) || request()->is(config('voyager.prefix').'/*')) {
-            Log::debug('2222222222222222222222222');
             $this->addThemesTable();
 
-            Log::debug('33333333333333333333333');
             app(Dispatcher::class)->listen('voyager.menu.display', function ($menu) {
                 $this->addThemeMenuItem($menu);
             });
 
-            Log::debug('444444444444444444444');
-            app(Dispatcher::class)->listen('voyager.admin.routing', function ($router) {
-                $this->addThemeRoutes($router);
-            });
         }
-        Log::debug('5555555555555555555555555');
+        app(Dispatcher::class)->listen('voyager.admin.routing', function ($router) {
+            $this->addThemeRoutes($router);
+        });
 
         // publish config
         $this->publishes([dirname(__DIR__).'/config/themes.php' => config_path('themes.php')], 'themes-config');
@@ -107,12 +102,9 @@ class ThemesServiceProvider extends ServiceProvider
         $router->get('themes/activate/{theme}', ['uses' => $namespacePrefix.'ThemesController@activate', 'as' => 'theme.activate']);
         $router->get('themes/options/{theme}', ['uses' => $namespacePrefix.'ThemesController@options', 'as' => 'theme.options']);
         $router->post('themes/options/{theme}', ['uses' => $namespacePrefix.'ThemesController@options_save', 'as' => 'theme.options.post']);
-        Log::debug('666666666666666666666666666');
         $router->get('themes/options', function () {
-            Log::debug('7777777777777777777777777777777777');
             return redirect(route('voyager.theme.index'));
         });
-        Log::debug('88888888888888888888888888');
         $router->delete('themes/delete', ['uses' => $namespacePrefix.'ThemesController@delete', 'as' => 'theme.delete']);
     }
 
